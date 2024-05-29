@@ -1,0 +1,24 @@
+import unittest
+from app import app, compound_interest
+
+class FlaskTest(unittest.TestCase):
+
+    def setUp(self):
+        self.app = app.test_client()
+        self.app.testing = True
+
+    def test_compound_interest_calculation(self):
+        result = compound_interest(1000, 5, 2)
+        self.assertAlmostEqual(result, 102.50, places=2)
+
+    def test_index_route(self):
+        response = self.app.get('/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_calculate_interest_route(self):
+        response = self.app.post('/compound_interest', data=dict(principal=1000, rate=5, time=2))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'The compound interest is:', response.data)
+
+if __name__ == '__main__':
+    unittest.main()
